@@ -1,2 +1,3 @@
-#Little Schemer的代码
-编译器是Racket
+Little Schemer的代码
+=======================
+书上的一些练习
