@@ -1,7 +1,7 @@
 ;;                                                    Learning Scheme with The Little Schemer!
-  
-#lang scheme 
-  
+
+#lang scheme
+
   ;; try to build lists with cons
   ;; for example (a b (c))
   (define list-l
@@ -13,7 +13,7 @@
   ;;what is "lat?"  first,lat is a list of atom, so you know what lat? is.
   ;;lat? takes a list;
 
-   (define lat?                                                 ;; 
+   (define lat?                                                 ;;
      (lambda (l)                                                ;; lats is a procedure
       (cond                                                     ;; if-then-else
          ((null? l) #t)                                         ;; l is an empty list--return true
@@ -48,7 +48,7 @@
   ;;  simplify
     (define rember
       (lambda (a lat)
-        (cond 
+        (cond
          ((null? lat)  '())
          ((eq? (car lat) a) (cdr lat))
           (else (cons (car lat)
@@ -56,48 +56,48 @@
 
   ;;define firsts
   ;;The function firsts takes one argument--a list,which is either a null list
-  ;;or contains only non-empty lists.It builds another list composed of first  
+  ;;or contains only non-empty lists.It builds another list composed of first
   ;;S-expression of each internal list.
-     
+
     (define firsts
-     (lambda (l)  
+     (lambda (l)
       (cond
        ((null? l) (quote()))
        (else (cons (car (car l))
-                   (firsts (cdr l))))))) 
+                   (firsts (cdr l)))))))
 
   ;;a list ((a b) (c d) (e f))
      (define list-m
         (cons (cons "a" (cons "b" '())) (cons (cons "c" (cons "d" '())) (cons (cons "e" (cons "f" '())) '()))))
-     
+
   ;;define insertR
   ;;It takes three arguments: the atom new and old ,and a lat .
   ;;The function insertR builds a lat with new inserted to the
-  ;;right of the first occurrence of old . 
-   
+  ;;right of the first occurrence of old .
+
       (define insertR
          (lambda (new old lat)
             (cond
               ((null? lat) (quote()))
               ((eq? old (car lat)) (cons (car lat) (cons new (cdr lat))))
-              (else (cons (car lat) (insertR new old (cdr lat))))))) 
-      
+              (else (cons (car lat) (insertR new old (cdr lat)))))))
+
    ;;define subst
    ;;(subst new old lat)replace the first occurance of old in the lat
-   ;;with new 
+   ;;with new
       (define subst
         (lambda (new old lat)
-          (cond 
+          (cond
             ((null? lat) (quote()))
             ((eq? (car lat) old)
                 (cons new (cdr lat)))
             (else (cons (car lat)
                       (subst new old
                               (cdr lat)))))))
-      
-    ;;define subst2  
+
+    ;;define subst2
     ;;(subst2 new o1 o2 lat) replaces either the first occurrence of o1 or
-    ;;the first occurrence of o2 by new 
+    ;;the first occurrence of o2 by new
        (define subst2
          (lambda (new o1 o2 lat)
             (cond
@@ -107,7 +107,7 @@
                       (cons new (cdr lat)))
               (else (cons (car lat)
                          (subst2 new o1 o2 (cdr lat)))))))
-       
+
     ;;define multirember
     ;;(multirember a lat) removes all the atom eq? a in the lat
        (define multirember
@@ -115,42 +115,42 @@
              (cond
                 ((null? lat) (quote ()))
                 ((eq? (car lat) a) (multirember a (cdr lat)))
-                (else (cons (car lat) 
+                (else (cons (car lat)
                            (multirember a (cdr lat)))))))
-       
+
    ;;define multiinsertR
         (define multiinsertR
            (lambda (new old lat)
              (cond
                 ((null? lat) (quote()))
-                ((eq? (car lat) old) 
-                         (cons old 
-                          (cons new 
+                ((eq? (car lat) old)
+                         (cons old
+                          (cons new
                            (multiinsertR new old (cdr lat)))))
                 (else (cons (car lat)
                        (multiinsertR new old (cdr lat)))))))
-        
+
    ;;define multisubst
    ;;replaces old with new  (multisubst new old lat)
           (define multisubst
             (lambda (new old lat)
-               (cond 
+               (cond
                   ((null? lat) (quote()))
                   ((eq? (car lat) old)
                       (cons new
                             (multisubst new old (cdr lat))))
                   (else (cons (car lat)
-                            (multisubst new old (cdr lat)))))))   
-          
+                            (multisubst new old (cdr lat)))))))
+
    ;;number games;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;;define o+ with add1 and sub1
           (define o+
              (lambda (m n)
-               (cond 
-                 ((zero? n) 
+               (cond
+                 ((zero? n)
                       m)
                  (else (o+ (add1 m) (sub1 n))))))
-          
+
    ;;define o- with sub1 and add1
             (define o-
               (lambda (m n)
@@ -158,32 +158,32 @@
                    ((zero? n)
                       m)
                     (else (o- (sub1 m) (sub1 n))))))
-            
+
    ;;define addtup
             (define addtup
                (lambda (tup)
                   (cond
                     ((null? tup) 0)
                     (else (o+ (car tup) (addtup (cdr tup)))))))
-            
+
    ;;define o*  (o* a b) returns (* a b)
              (define o*
                 (lambda (m n)
-                  (cond 
+                  (cond
                      ((zero? n)
                          0)
                      (else (o+ m (o* m (sub1 n)))))))
    ;;define tup+
               (define tup+
                 (lambda(tup1 tup2)
-                  (cond 
+                  (cond
                     ((and (null? tup1) (null? tup2))
                      (quote()))
                     (else
                       (cons (o+ (car tup1) (car tup2))
                           (tup+
                             (cdr tup1) (cdr tup2)))))))
-              
+
    ;;a better tup+ which can work for any two tups
                (define tup++
                   (lambda(tup1 tup2)
@@ -198,51 +198,51 @@
    ;;(o> 10 100) returns #f (o> 100 100) returns #f
                (define o>
                  (lambda (m n)
-                   (cond 
+                   (cond
                      ((zero? m) #f)
                      ((zero? n) #t)
                      (else
                         (o> (sub1 m) (sub1 n))))))
-               
-   ;;define o< 
+
+   ;;define o<
              (define o<
                (lambda (m n)
-                 (cond 
+                 (cond
                     ((zero? n) #f)
                     ((zero? m) #t)
-                    (else 
+                    (else
                        (o< (sub1 m) (sub1 n))))))
-             
+
    ;;define o=
              (define o=
                (lambda (m n)
                  (cond
                    ((or (o> m n) (o< m n)) #f)
                    (else #t))))
-    
+
    ;;define oexpt
              (define oexpt
                (lambda (m n)
-                 (cond 
+                 (cond
                    ((zero? n) 1)
                    (else
                      (o* m (oexpt m (sub1 n)))))))
-             
+
    ;;define quotient/division (o/ m n) returns m/n
              (define o/
                (lambda (m n)
                  (cond
                    ((o< m n) 0)
                    (else (add1 (o/ (o- m n) n))))))
-             
+
     ;;length lat .caculate the length of a lat
               (define length
                 (lambda (lat)
-                  (cond 
+                  (cond
                      ((null? lat) 0)
                      (else
                         (add1 (length (cdr lat)))))))
-              
+
    ;;define pick   (pick n lat) returns the nth atom in the lat
                 (define pick
                   (lambda (n lat)
@@ -250,23 +250,23 @@
                       ((zero? n) (quote "No answer"))
                       ((zero? (sub1 n)) (car lat))
                       (else (pick (sub1 n) (cdr lat))))))
-                
-   ;;define rempick for example (rempick 3 (hotdogs with hot mustard)) returns (hotdogs with mustard) 
+
+   ;;define rempick for example (rempick 3 (hotdogs with hot mustard)) returns (hotdogs with mustard)
                 (define rempick
                   (lambda (n lat)
-                    (cond 
+                    (cond
                       ((zero? n) lat)
                       ((zero? (sub1 n)) (cdr lat))
-                      (else (cons (car lat) 
+                      (else (cons (car lat)
                                (rempick (sub1 n) (cdr lat)))))))
-                
+
    ;;define number?
    ;;sorry! numbers? is a primitive procedure which cannot be "defined" by other procedure
-       
-                
+
+
    ;define no-nums  (no-nums lat) for example (no-nums (5 pears 6 prunes 9 dates))
    ;;                                         returns (pears prunes dates)
-                
+
                 (define no-nums
                   (lambda (lat)
                    (cond
@@ -275,7 +275,7 @@
                               (no-nums (cdr lat)))
                     (else (cons (car lat)
                              (no-nums (cdr lat)))))))
-                
+
    ;;define all-nums
                  (define all-nums
                    (lambda (lat)
@@ -284,9 +284,9 @@
                        ((number? (car lat))(cons (car lat)
                                     (all-nums (cdr lat))))
                        (else (all-nums (cdr lat))))))
-                 
+
    ;;define eqan?  (eqan? a b) if a,b are nums and a=b,or if a,b are atoms and a eq b,returns #t.else returns #f
-                 
+
                  (define eqan?
                    (lambda (a b)
                      (cond
@@ -295,23 +295,23 @@
                         ((or (number? a) (number? b))
                              #f)
                         (else (eq? a b)))))
-                 
+
    ;;define occur   (occur a lat) counts the number of times that a occurs in the lat
                  (define occur
                    (lambda (a lat)
                      (cond
                         ((null? lat) 0)
-                        ((eq? (car lat) a) 
+                        ((eq? (car lat) a)
                             (add1 (occur a (cdr lat))))
                         (else (occur a (cdr lat))))))
-                 
+
    ;;define one?
                   (define one?
                      (lambda(n)
                        (o= n 1)))
-                  
-   ;;rewrite rempick with one?     
-                (define rempick2 
+
+   ;;rewrite rempick with one?
+                (define rempick2
                   (lambda (n lat)
                     (cond
                       ((zero? n) (quote "No Answer"))
@@ -319,7 +319,7 @@
                       (else (cons (car lat)
                                (rempick2 (sub1 n)
                                         (cdr lat)))))))
-                
+
    ;;define rember* which pronounced "rember-star"
    ;;(rember* a l) a=cup l=((coffee) cup ((tea) cup) (and (hick)) cup)
    ;;returns ((coffee) ((tea)) (and (hick)))
@@ -332,7 +332,7 @@
                           (cons (car l) (rember* a (cdr l))))
                       (else (cons (rember* a (car l))
                               (rember* a(cdr l))))))) ;;a bit ugly
-                
+
    ;;define insertR*
    ;;the procedure asks three questions
    ;;the list is null? || (car list) is an atom?|| else
@@ -353,7 +353,7 @@
    ;;return the number of times that a occurs in the list!
                  (define occur*
                    (lambda (a l)
-                     (cond 
+                     (cond
                         ((null? l) 0)
                         ((atom? (car l))
                            (cond
@@ -362,13 +362,13 @@
                               (else (occur* a (cdr l)))))
                         (else (o+ (occur* a (car l))
                                   (occur* a (cdr l)))))))
-                          
-                
+
+
    ;;define subst* (subst* new old)
    ;;replace all the old with new in the list
                  (define subst*
                    (lambda (new old l)
-                     (cond 
+                     (cond
                        ((null? l) '())
                        ((atom? (car l))
                            (cond
@@ -378,10 +378,10 @@
                                       (subst* new old (cdr l))))))
                        (else (cons (subst* new old (car l))
                                (subst* new old (cdr l)))))))
-                     
-                
+
+
    ;;define insertL* (insertL* new old l)
-   ;;very similiar with insertR*                
+   ;;very similiar with insertR*
                  (define insertL*
                    (lambda (new old l)
                      (cond
@@ -391,11 +391,11 @@
                             ((eq? (car l) old) (cons new
                                                  (cons old (insertL* new old (cdr l)))))
                             (else (cons (car l) (insertL* new old (cdr l))))))
-                       (else (cons (insertL* new old (car l)) 
+                       (else (cons (insertL* new old (car l))
                                (insertL* new old (cdr l)))))))
-                 
-             
-                
+
+
+
    ;;define member*
    ;;(member* a l) returns true or false
                   (define member*
@@ -407,8 +407,8 @@
                               (member* a (cdr l))))
                         (else (or (member* a (car l))
                                   (member* a (cdr l)))))))
-                      
-                
+
+
    ;;define leftmost
    ;;The function leftmost finds the leftmost atom in a non-empty list of S-expressions
    ;;that does not contain the empty list.
@@ -418,12 +418,12 @@
                       ((null? l) (quote "NO Answer"))
                       ((atom? (car l)) (car l))
                       (else (leftmost (car l))))))
-                   
+
    ;;important tips (and ..) (or..) both can be defined as functions in terms of
    ;;(cond..) (and alpha beta)=(cond (alpha beta) (else #f))
    ;;         (or alpha beta)=(cond (alpha #t) (else beta))
-    
-                
+
+
    ;;define eqlist?
    ;;(eqlist? l1 l2) returns #t iff l1==l2 ;5 questions total
                 (define eqlist?
@@ -436,10 +436,10 @@
                           ((and (atom? (car l1)) (atom? (car l2))) (and (eqan? (car l1) (car l2))
                                                                        (eqlist? (cdr l1) (cdr l2))))
                           ((or (atom? (car l1)) (atom? (car l2))) #f)
-                          (else (and (eqlist? (car l1) (car l2)) (eqlist? (cdr l1) (cdr l2))))))))) 
-                   
+                          (else (and (eqlist? (car l1) (car l2)) (eqlist? (cdr l1) (cdr l2)))))))))
+
    ;;define equal?  ||what's the difference between S-exp and list||or what's the hell is the S-exp
-   ;;(equal? s1 s2) check whether s1 and s2 are the same S-expressions            
+   ;;(equal? s1 s2) check whether s1 and s2 are the same S-expressions
             (define equal?
               (lambda (s1 s2)
                 (cond
@@ -447,7 +447,7 @@
                    (eqan? s1 s2))
                   ((or (atom? s1) (atom? s2)) #f)
                   (else (eqlist? s1 s2)))))
-            
+
    ;;rewrite equal? with equal?
               (define eqlist2?
                 (lambda (l1 l2)
@@ -457,7 +457,7 @@
                     (else
                      (and (equal? (car l1) (car l2))
                        (eqlist2? (cdr l1) (cdr l2)))))))
-                
+
    ;;define rember+
    ;;(rember+ s l) s is S-exp and l is list of S-exp
               (define rember+
@@ -467,13 +467,13 @@
                     ((equal? (car l) s) (cdr l))
                     (else (cons (car l)
                                 (rember+ s (cdr l)))))))
-                    
+
    ;;now think about eq?,=,eqan?,equal?,eqlist?
    ;;what's the relationship between them!
-              
+
    ;;chapter six :shadows
    ;;about arithmetic expression
-              
+
    ;;define numbered?
    ;;(numbered? aexp) aexp is short for arithmetic expression
    ;;this procedure check whether aexp is an aexp? --!
@@ -501,10 +501,10 @@
                       (and (numbered#? (car aexp))
                            (numbered#?
                              (car (cdr (cdr aexp)))))))))
-   
+
    ;; + represents a special operator while '+ represents just an atom!!
-               
-   ;;define value!   (value! nexp) returns the natural value of a numbered arithmetic expression!!     
+
+   ;;define value!   (value! nexp) returns the natural value of a numbered arithmetic expression!!
                (define value!
                  (lambda (nexp)
                   (cond
@@ -515,13 +515,13 @@
                       (* (value! (car nexp)) (value! (car (cdr (cdr nexp))))))
                     ((eq? (car (cdr nexp)) (quote expt))
                       (expt (value! (car nexp)) (value! (car (cdr (cdr nexp)))))))))
-               
+
    ;;another value! whitch deals with another kind of nexp
                (define value
-                 (lambda (nexp)
+                 (lambda (nexp) ;; 接受一个算术表达式
                    (cond
-                     ((atom? nexp) nexp)
-                     ((eq? (car nexp) (quote +))
+                     ((atom? nexp) nexp) ;; 如果是原子，直接返回
+                     ((eq? (car nexp) (quote +)) ;; 如果是+
                       (+ (value (cdr nexp))
                          (value (cdr (cdr nexp)))))
                      ((eq? (car nexp) (quote *))
@@ -530,32 +530,32 @@
                      (else
                       (expt (value (cdr nexp))
                             (value (cdr (cdr nexp))))))))
-                           
-   
+
+
    ;;now since the procedure "value" looks very trivial. think about high-level-procedure
                ;; get the operator
                (define operator
                  (lambda (aexp)
                    (car aexp)))
-               
+
                ;;get the first part of aexp
                (define 1st-sub-exp
                  (lambda (aexp)
                    (cdr aexp)))
-               
+
                ;;get the second part of aexp
                (define 2nd-sub-exp
                  (lambda (aexp)
                    (cdr (cdr aexp))))   ;;Remember the Eighth Commandment?:use help functions to abstract from representations!!
-               
-   ;;define set?  (set? lat) returns true #t iff lat is null or each atom in the lat appears only once 
+
+   ;;define set?  (set? lat) returns true #t iff lat is null or each atom in the lat appears only once
                (define set?
                  (lambda (lat)
-                   (cond 
+                   (cond
                      ((null? lat) #t)
                      ((member? (car lat) (cdr lat)) #f)
                      (else (set? (cdr lat))))))
-               
+
    ;;makeset?  (makeset lat) aims to make a set out of lat
                (define makeset
                  (lambda (lat)
@@ -565,22 +565,22 @@
                         (makeset (cdr lat)))
                      (else (cons (car lat)
                                  (makeset (cdr lat)))))))
-              
+
    ;;rewrite makeset use multirember!
                (define makeset!
                  (lambda (lat)
                    (cond
                      ((null? lat) '())
                      (else (cons (car lat)
-                            (makeset! 
+                            (makeset!
                              (multirember (car lat)
                               (cdr lat))))))))
    ;;define subset? (subset? (5 chicken wings) (5 hamburgers 2 pieces fried chicken and light duckling wings)) #t
                (define subset?
                  (lambda (set1 set2)
-                   (cond 
+                   (cond
                      ((null? set1) #t)
-                     (else (and 
+                     (else (and
                               (member? (car set1) set2)
                               (subset? (cdr set1) set2))))))
    ;;define eqset?
@@ -588,7 +588,7 @@
                  (lambda (set1 set2)
                    (and (subset? set1 set2)
                         (subset? set2 set2))))
-               
+
    ;;intersect?
                (define intersect?
                  (lambda (set1 set2)
@@ -597,7 +597,7 @@
                      (else
                       (or (member? (car set1) set2)
                           (intersect? (cdr set1) set2))))))
-               
+
    ;;intersect (intersect set1 set2) returns a set
                (define intersect
                  (lambda (set1 set2)
@@ -607,7 +607,7 @@
                                   (cons (car set1)
                                    (intersect (cdr set1) set2)))
                      (else (intersect (cdr set1) set2)))))
-               
+
    ;;define union combines 2 set together
                (define union
                  (lambda (set1 set2)
@@ -626,15 +626,15 @@
                        (xxx (cdr set1) set2))
                      (else (cons (car set1)
                               (xxx (cdr set1) set2))))))
-               
-   ;;define intersectall  (intersectall l-set)  
+
+   ;;define intersectall  (intersectall l-set)
                (define intersectall
                  (lambda (l-set)
                    (cond
                      ((null? (cdr l-set)) (car l-set))
                      (else (intersect (car l-set)
                               (intersectall (cdr l-set)))))))
-               
+
    ;;define a-pair? list with only 2 S-expressions
                (define a-pair?
                  (lambda (x)
@@ -647,7 +647,7 @@
    ;;define first second build
                (define first
                  (lambda (p)
-                   (cond 
+                   (cond
                      (else (car p)))))
                (define second
                  (lambda (p)
@@ -661,12 +661,12 @@
                (define third
                  (lambda (l)
                    (car (cdr (cdr l)))))
-                      
+
    ;;rel--relation    fun--function
                (define fun?
                  (lambda (rel)
                    (set? (firsts rel))))
-               
+
    ;;define revrel (revrel rel) returns another rel (revrel rel)=S(rel)
                (define revrel
                  (lambda (rel)
@@ -675,18 +675,18 @@
                    (else (cons (build
                                  (second (car rel))
                                  (first (car rel)))
-                            (revrel (cdr rel)))))))  
+                            (revrel (cdr rel)))))))
    ;;build a help function to make revrel shorter
                (define revpair
                  (lambda (pair)
                    (build (second pair)
                           (first pair))))
-        
+
    ;;define fullfun?
                (define fullfun?
                  (lambda (fun)
                    (fun? (revrel fun))))
-               
+
    ;;define rember-f (rember-f test? a l) test? is a procedure returns #t/#f a is S-exp/atom l is lat/list
                (define rember-f
                  (lambda (test? a l)
@@ -694,7 +694,7 @@
                      ((null? l) '())
                      ((test? (car l) a) (cdr l))
                      (else (cons (car l)
-                                 (rember-f test? a 
+                                 (rember-f test? a
                                            (cdr l)))))))
    ;;an other rember-f
                (define rember-f*
@@ -709,7 +709,7 @@
                (define insertR-f
                  (lambda (test?)
                    (lambda (new old l)
-                     (cond 
+                     (cond
                        ((null? l) '())
                        ((test? (car l) old)
                         (cons old (cons new (cdr l))))
@@ -720,7 +720,7 @@
                (define insertL-f
                  (lambda (test?)
                    (lambda (new old l)
-                     (cond 
+                     (cond
                        ((null? l) '())
                        ((test? (car l) old)
                         (cons new (cons old (cdr l))))
@@ -728,6 +728,7 @@
                                    ((insertL-f test?) new old
                                                       (cdr l))))))))
    ;;define insert-g
+   ;;insert generator which generate left insert and right insert
                (define seqL
                  (lambda (new old l)
                    (cons new (cons old l))))
@@ -737,13 +738,13 @@
                (define insert-g
                  (lambda (seg)
                    (lambda (new old l)
-                     (cond 
+                     (cond
                        ((null? l) '())
                        ((eq? (car l) old)
                         (seg new old (cdr l)))
                        (else (cons (car l)
                                ((insert-g seg) new old
-                                 (cdr l))))))))           
+                                 (cdr l))))))))
          ;;insertL (define insertL (insert-g seqL))
          ;;insertR (define insertR (insert-g seqR))
          ;;Is it necessary to give names to seqL and seqR
@@ -751,19 +752,19 @@
                (define seqS
                  (lambda (new old l)
                    (cons new l)))
-         ;;subst (define subst (insert-g seqS))      
-               
+         ;;subst (define subst (insert-g seqS))
+
                 (define seqrem
                   (lambda (new old l)
                     l))
-         ;;rember (define rember 
+         ;;rember (define rember
          ;;         (lambda (a l)
          ;;            ((insert-g seqrem) #f a l)))
    ;;the Ninth Commandment:Abstract common patterns with a new function
    ;;define atom-to-function:build abstraction for "value"
                 (define atom-to-function
                   (lambda (x)
-                    (cond 
+                    (cond
                       ((eq? x (quote +)) +)
                       ((eq? x (quote *)) *)
                       (else expt))))
@@ -777,7 +778,7 @@
                           (operator nexp))
                          (value* (1st-sub-exp nexp))
                          (value* (2nd-sub-exp) nexp))))))
-                
+
    ;;multirember
                 (define multirember-f
                   (lambda (test?)
@@ -790,56 +791,173 @@
                         (else (cons (car lat)
                                  ((multirember-f test?) a
                                         (cdr lat))))))))
-  
-   ;;((multirember-f test?) a lat) test? is eq? and a is tuna and lat 
-   ;;is (shrimp salad tuna salad and tuna) 
+
+   ;;((multirember-f test?) a lat) test? is eq? and a is tuna and lat
+   ;;is (shrimp salad tuna salad and tuna)
    ;;让test？接受一个参数，这样(multirember-f test?)就只用接受一个参数
-                
+
                 (define a-friend
                   (lambda (x y)
                     (null? y)))
-                (define multirember&co
-                  (lambda (a lat col)
-                    (cond
-                      ((null? lat)
-                       (col '() '()))
-                      ((eq? (car lat) a)
-                       (multirember&co a
-                                       (cdr lat)
-                                       (lambda (newlat seen)
-                                               (col newlat
-                                                    (cons (car lat) seen)))))
-                      (else
-                       (multirember&co a
-                                       (cdr lat)
-                                       (lambda (newlat seen)
-                                         (col (cons (car lat) newlat)
-                                              seen)))))))
-     (define C
-       (lambda (n)
-         (cond
-           ((one? n) 1)
-           (else
+
+                    ;(multirember&co a lat col)
+                    ; a = "tuna"
+                    ; lat = ("strawberries" "tuna" "swordfish")
+                    ; col = a-friend
+                    ; (define a-friend
+                    ;   (lambda (x y)
+                    ;    (null? y)))
+                    ; a-friend 返回一个接受两个参数的过程，该过程忽略第一个参数，根据第二个参数是否为空返回#t #f
+                    ;
+                    ;
+
+                ;; 为什么会返回false呢
+                ;; 因为col在递归过程中变了,
+                ;; collector是什么：在递归函数的时候，需要有一个“变量”，每次递归前查看变量，如果变量为某个值，则递归终止
+                ;;                 collector也是在递归过程中变化的，不过它不是变量，它是过程。在递归终止的时候apply这个collector
+                ;;                 new-collector = (lambda (args ...)
+                ;;                                    (old-collecor (apply-some-procedure args...)))
+
+
+            ;;;  simplify
+            ;  (define rember
+            ;    (lambda (a lat)
+            ;      (cond
+            ;       ((null? lat)  '())
+            ;       ((eq? (car lat) a) (cdr lat))
+            ;        (else (cons (car lat)
+            ;                (rember a (cdr lat)))))))
+            ; (multirember&co "tuna" '(and "tuna") a-friend)
+            ;; 任何多k个参数的过程都可以规约一个单参数的过程，单参数的过程返回一个k-1参数的过程
+            ;; currying
+
+      (define multirember
+         (lambda (a lat)
             (cond
-              ((even? n) (C (/ n 2)))
-              (else (C (add1 (* 3 n)))))))))
-               
-     (define A
-       (lambda (n m)
-         (cond 
-           ((zero? n) (add1 m))
-           ((zero? m) (A (sub1 n) 1))
-           (else (A (sub1 n)
-                    (A n (sub1 m)))))))
-               
-      (define length!
-        (lambda (l)
+               ((null? lat) ('()))
+               ((eq? (car lat) a) (multirember a (cdr lat)))
+               (else (cons (car lat)
+                          (multirember a (cdr lat)))))))
+
+      (define multirember&co
+        (lambda (a lat col) ;; 接受三个参数，a是一个atom，base atom for comparison
+          (cond              ; col是一个continuation，通俗地说是一个collector
+            ((null? lat) ;; lat  == list of atoms; lat 如果为空，递归出口
+             (col '() '())) ;; col 用来组合？
+            ((eq? (car lat) a) ;; 如果第一个元素为a
+             (multirember&co a ;;
+                             (cdr lat) ;; 取列表剩下的东西
+                             (lambda (newlat seen) ;; 返回一个接受两个方法的参数
+                                     (col newlat   ;; 为啥不是 ;;(cons a seen)
+                                          (cons (car lat) seen)))))
+            (else ;;
+             (multirember&co a
+                             (cdr lat)
+                             (lambda (newlat seen)
+                               (col (cons (car lat) newlat)
+                                    seen)))))))
+
+     (define multiinsertLR&co
+       (lambda (new oldL oldR lat col)
+        (cond
+          ((null? lat)
+            (col '() 0 0 )) ;; why ??
+          ((eq? (car lat) oldL) ;; first element equals to left element
+            (multiinsertLR&co new oldL oldR
+              (cdr lat)
+              (lambda (newlat L R) ;; new collector. append new-lat on left side
+               (col (cons new
+                      (cons oldL newlat))
+                  (add1 L) R))))
+          ((eq? (car lat) oldR) ;; first element equals to right element
+            (multiinsertLR&co new oldL oldR
+              (cdr lat)
+              (lambda (newlat L R) ;; new collector. append new-lat on right side
+               (col (cons oldR
+                      (cons new newlat)) ; oldR
+                 L (add1 R))))) ; add right padding
+          (else
+            (multiinsertLR&co new oldL oldR
+              (cdr lat)
+              (lambda (newlat L R) ;; new collector. neither append oldL or oldR
+                (col (cons (car lat) newlat) ;
+                  L R)))))))
+
+        ;; (col `() 0 0 ) ;first element is lat that multiinsertLR would have procedure for (cdr lat).oldL.oldR ;
+        ;; second & third would be number of left right padding
+
+        ;; example;
+        ;; (multiinsertLR&co new oldL oldR lat col)
+        ;; new is salty ; fish ; chips lat = `("chips" and "fish" or "fish" and "chips")
+        ;; (multiinsertLR&co "salty" "leftPadding" "rightPadding" `("chips" and "fish" or "fish" and "chips"))
+
+      (define multiinsertLR
+        (lambda (new oldL oldR lat)
           (cond
-            ((null? l) 0)
-            (else (add1 (length! (cdr l)))))))
-               
-               
-               
-               
-                      
-                   
+            ((null? lat) '())
+            ((eq? (car lat) oldL)
+              (cons new
+                (cons oldL
+                  (multiinsertLR new old oldR
+                    (cdr lat)))))
+            ((eq? (car lat) oldR)
+              (cons oldR
+                (cons new
+                  (multiinsertLR new oldL oldR
+                    (cdr lat)))))
+            (else
+              (cons (car lat)
+                (multiinsertLR new oldL oldR
+                  (cdr lat)))))))
+
+            ;; (multirember&co "tuna" '("hello" "world" "tuna") a-friend)
+
+
+        (define evens-only*&co ;; 很简单,对list过滤
+          (lambda (l col) ;; col for collector
+            (cond
+              ((null? l)  ; case list is null;
+                (col `() 1 0))
+              ((atom? (car l)) ; first element is atom
+               (cond
+                ((even? (car l))
+                 (evens-only*&co (cdr l)
+                   (lambda (newlat product sum)
+                     (col (cons (car l)
+                            newlat)
+                      (* (car l) product) sum))))
+                 (else (evens-only*&co (cdr l)
+                    (lambda (newlat product sum)
+                       (col newlat
+                          product (+ (car l) sum)))))))
+              (else (evens-only*&co (car l)
+                      (lambda (alat aproduct asum)
+                    ;(col newlat product sum)
+                        (evens-only*&co (cdr l)
+                                    (lambda (dlat dproduct dsum)
+                                      (col (cons alat dlat)
+                                           (* aproduct dproduct)
+                                           (+ asum dsum))))))))))
+
+      (define evens-only*
+        (lambda(l)
+              (cond
+                ((null? l) `())
+                ((atom? (car l))
+                (cond
+                  ((even? (car l))
+                       (cons (car l)
+                             (evens-only* (cdr l))))
+                  (else (evens-only* (cdr l)))))
+                (else (cons (evens-only* (car l)) ;;
+                            (evens-only* (cdr l)))))))
+
+            (define the-last-friend
+              (lambda (newl product sum)
+               (cons sum
+                     (cons product
+                           newl))))
+
+(define test-l `((9 1 2 8) 3 10 ((9 9) 7 6) 2))
+
+;; Secion 9 ... and Agagin. and Agagin. and Agagin...
