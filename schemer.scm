@@ -1,5 +1,7 @@
 ;;                                                    Learning Scheme with The Little Schemer!
 
+;;  http://docs.huihoo.com/homepage/shredderyin/wiki/SchemeAmb.html
+
 #lang scheme
 
   ;; try to build lists with cons
@@ -961,3 +963,220 @@
 (define test-l `((9 1 2 8) 3 10 ((9 9) 7 6) 2))
 
 ;; Secion 9 ... and Agagin. and Agagin. and Agagin...
+
+(define looking
+  (lambda (a lat)
+    (keep-looking a (pick 1 lat) lat)))
+
+(define keep-looking
+  (lambda (a sorn lat)
+    (cond
+      ((number? sorn)
+       (keep-looking a (pick sorn lat) lat))
+      (else (eq? sorn a)))))
+
+;; what is partial function?
+ (define eternity
+   (lambda(x)
+      (eternity x)))
+
+  (define shift
+    (lambda (pair)
+      (build (first (first pair))
+        (build (second (first pair))
+          (second pair)))))
+
+
+ (define align
+   (lambda (pora)
+    (cond
+      ((atom? pora) pora)
+      ((a-pair? (first pora))
+        (align (shift pora)))
+      (else (build (first pora)
+              (align (second pora)))))))
+ ;; 递归，但没有明确的递归出口，不保证能运行结束
+
+
+ (define length*
+   (lambda (pora)
+    (cond
+      ((atom? pora) 1)
+      (else
+        (+ (length* (first pora))
+           (length* (second pora)))))))
+
+  (define shuffle
+    (lambda (pora)
+      (cond
+        ((atom? pora) pora)
+        ((a-pair? (first pora))
+         (shuffle (revpair pora)))
+        (else (build (first pora)
+                (shuffle (second pora)))))))
+
+;; 是否存在一个函数，它能判断一个函数是否对于所有的输入都还有输出
+
+;; let's try
+;; (define will-stop?
+;;    (lambda (f)
+;;       ...))
+;; 首先判断，如果输入是empty list，程序是否会stop
+
+(define last-try
+  (lambda (x)
+    (and (will-stop? last-try)
+      (eternity x)))) ;; if we predicate last-try will stop. (will-stop? last-try) -> #t
+                      ;; if we predicate last-try will not stop. it returns #f
+
+;; 证明 will-stop?是无法定义的
+;; 我能能详细描述will-stop? 但无法定义它  Alan M. Turing
+
+;; 递归的本质是什么
+;; 为啥有些递归无法终止
+
+;; 不使用define，仅仅使用lambda 怎么进行递归
+
+((lambda (length)
+  (lambda (l)
+    (cond
+      ((null? l) 0)
+      (else (add1 (length (cdr l)))))))
+    eternity)
+;; length0 generator
+
+((lambda (f)
+  (lambda (l)
+    (cond
+      ((null? l) 0)
+      (else (add1 (f (cdr l))))))
+  ((lambda (g)
+    (lambda (l)
+      (cond
+        ((null? l) 0)
+        (else (add1 (g (cdr l)))))))
+  eternity))
+  ;; length1 generator
+  ;; 看不懂啊
+
+  ;; 下一步 get rid of repetition
+  ;; 把重复的部分抽象出来 ,mk-length
+
+;; new length0
+((lambda (mk-length)
+  (mk-length eternity))
+  (lambda (length)
+    (lambda (l)
+      (cond
+        ((null? l) 0)
+        (else (add1 (length (cdr l))))))))
+
+ ;; new length1
+ ((lambda (mk-length)
+    (mk-length
+      (mk-length eternity)))
+    (lambda (length)
+      (lambda (l)
+        (cond
+          ((null? l) 0)
+          (else (add1 (length (cdr l))))))))
+
+  ((lambda (mk-length)
+    (mk-length
+      (mk-length
+        (mk-length eternity))))
+    (lambda (length)
+      (lambda (l)
+        (cond
+          ((null? l) 0)
+          (else (add1 (length (cdr l))))))))
+
+;; a function which preduce length0
+;; eternity 的作用是什么 ?
+
+;; 所以，这一章大概讲了什么呢，
+;; 用lambda 实现所有的控制流，lambda 是与图灵等价的一种计算模型？
+
+;; 没人在乎mk-length 接受什么参数。
+
+;; 又一个改进版的mk-length
+ ((lambda (mk-length)
+    (mk-length mk-length))
+  (lambda (length)
+    (lambda (l)
+      (cond
+        ((null? l) 0)
+        (else (add1
+                (length (cdr l))))))))
+ ;; 完全看不懂版本的mk-length
+
+ ((lambda (mk-length)
+    (mk-length mk-length)
+  (lambda (mk-length)
+    (lambda (l)
+      (cond
+        ((null? l) 0)
+        (else (add1
+                mk-length (cdr l))))))))
+  ;; 更加看不懂了，为啥第二个lambda的参数偏偏要命名为mk-length
+
+  ;; 更更加看不懂的一个函数，不过其实就是过程length
+  ((lambda (mk-length)
+     (mk-length mk-length)
+   (lambda (mk-length)
+     (lambda (l)
+       (cond
+         ((null? l) 0)
+         (else (add1
+                ((mk-length mk-length)
+                  (cdr l)))))))))
+
+  ;; 再来一个
+ ((lambda (mk-length)
+    (mk-length mk-length)) ;;; brain fuck
+  (lambda (mk-length)
+    ((lambda (length)
+      (lambda (l)
+        (cond
+          (null? l) 0)
+          (else (add1 (length (cdr l))))))
+    (mk-length mk-length))))
+
+  ;; If f is a function of one argument. is (lambda (x) (f x)) a function of on argument
+  ;; yes, of course it is
+
+  ;; If (mk-length mk-length) returns a function of one argument.
+  ;; (lambda (x) ((mk-length mk-length) x)) returns a function of one argument
+  ;; of course it is.
+
+  ;; we always replacing a name with its value.
+  ;; here we extract a value and give it a names
+
+  ;; 反正看不懂，再写几个过程，也许突然懂了呢
+  ((lambda (le)
+    ((lambda (mk-length)
+      (mk-length mk-length))
+    (lambda (mk-length)
+      (le (lambda (x)
+            ((mk-length mk-length) x))))))
+   (lambda (length)
+    (lambda (l)
+      (cond
+        ((null? l) 0)
+        (else (add1 (length (cdr l))))))))
+
+  ;; applicative-order Y combinator
+
+  (define Y
+    (lambda (le)
+      ((lambda (f) (f f))
+        (lambda (f)
+          (le (lambda (x) ((f f ) x)))))))
+
+  ;; 什么是applicative-order .为什么Y combinator能工作呢
+  ;; 最左最内求值
+
+  ;; 这一章很多没看懂 1. 为什么Y combinator能工作 2. 怎么匿名写出一个迭代过程 3. 什么是应用序求值 4. Y combinator有什么用呢，既然都有define这个东西了
+  ;; 什么是value 什么是name 他们之间有什么区别 匿名过程到底有什么用呢
+
+  ;;
