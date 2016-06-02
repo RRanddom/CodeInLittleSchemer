@@ -1,6 +1,10 @@
 ;;                                                    Learning Scheme with The Little Schemer!
 
+;;  some relative blogs
 ;;  http://docs.huihoo.com/homepage/shredderyin/wiki/SchemeAmb.html
+;;  http://blog.qinjian.me/2013/07/03/little_scheme
+;;  http://www.ibm.com/developerworks/linux/library/l-advflow/index.html (continuation)
+;;  http://liujiacai.net/blog/2016/02/22/recursion-without-name/
 
 #lang scheme
 
@@ -1180,3 +1184,272 @@
   ;; 什么是value 什么是name 他们之间有什么区别 匿名过程到底有什么用呢
 
   ;;
+
+  ;;  Section 10. What's the value of all of this?
+  ;;  定义entry这个数据结构。a pair of set。 whose first list is a set 。 2 set equal length
+  ;;  第一个set 可以看做是names 第二个set可以看做是values
+  ;; (define example-entry
+  ;;           `((appetizer entree beverage)
+  ;;              (food tastes good)))
+  ;; (lookup-in-entry entree example-entry)  -->  tastes
+
+
+  ;;
+  (define looking-in-entry
+    (lambda (name entry entry-f) ;;
+      (lookup-in-entry-help  name
+        (first entry)
+        (second entry)
+        entry-f)))
+
+
+  (define looking-in-entry-help
+    (lambda (name names values entry-f)
+      (cond
+        ((null? names) (entry-f name))
+        ((eq? (car names) name)
+          (car values))
+        (else (lookup-in-entry-help name
+                (cdr names)
+                (cdr values)
+                entry-f)))))
+
+    ;; a table is a list of entries
+    ;; aka environment
+    ;  (((appetizer entree beverage)
+    ;     (pate boeuf vin))
+    ;  (( beverage dessert)
+    ;;  ((food is) (number one with us))))
+    ;
+
+    ;; extend-table {entry table} 在table里面插入entry
+
+    (lambda (name)
+      (lookup-in-table name
+        (cdr table)
+        table-f))
+
+
+    ;; types in Scheme
+    ;;    *const
+    ;;    *quote
+    ;;    *identifier
+    ;;    *lambda
+    ;;    *cond
+    ;;    *application
+
+    ;; 这一章基本写了一个scheme 解释器，
+    ;; 回忆一下著名的apply-eval太极图 嘿嘿嘿
+    ;; foisted
+
+  ;; 第八章引入了 continuation的概念 (研究下call/cc)
+  ;; 第九章引入了 Y conbinator的概念 引入了应用序求值
+  ;; 第十章实现了一个scheme子集的解释器 eval-apply
+
+  ;; 作者推荐的书
+  ;; Flatland
+  ;; 爱丽丝
+  ;; Native set Theory
+  ;; How to Solve it
+
+  ;; 自己再推导一次Y combinator
+
+  ;; 朴素的阶乘函数
+  (define factorial
+    (lambda (n)
+        (cond
+          ((= n 0) 1)
+          (else
+            (* n (factorial (- n 1)))))))
+
+  ;; 我们要想办法写一个匿名的阶乘，不准用define 哦
+  ;; anonymous-factorial
+  (lambda (n)
+    (cond
+      ((= n 0) n)
+      (else
+        ))) ;; some magic procedure that do the recursion
+
+  ;; let's try
+  ;; (define eternity
+  ;;   (lambda(x)
+  ;;      (eternity x)))
+  ;; eternity 这个过程干了什么？
+  ;; take an argument x and recurse on it self infinitely
+  ;;
+
+  ;(lambda (n)
+  ;  (cond
+  ;    ((= n 0) n)
+  ;    (else (lambda (another-n)
+  ;            (cond
+  ;              ((= n 0) n)
+  ;              (else eternity))))))
+
+  ;; 一个递归过程
+  ;; 能求解 （factorial 0） （factorial 1）
+  (lambda (n)
+    (cond
+      ((= n 0) 1)
+      (else  ;;
+        (* n
+          ((lambda (n)
+            (cond
+              ((= n 0) 1)
+              (else
+                (* n (eternity (- n 1))))))
+             (- n 1))))))
+
+   ;; 再来一个
+   ;; function
+   (lambda (n)
+      (cond
+        ((= n 0) 1) ;; n = 0 递归出口
+        (else
+          (* n
+            ((lambda (m)
+              (cond
+                ((= m 0) 1)
+                (else (* m
+                        ((lambda (q)
+                          (cond
+                            ((= q 0) 1)
+                            (else (* q
+                                    ((lambda (p)
+                                      (cond
+                                        ((= p 0) 1)
+                                        (else (* p
+                                                ((lambda (w)
+                                                  (cond
+                                                    ((= w 0) 1)
+                                                    (else (* w (eternity (- w 1)))))) ;; 递归不下去了
+                                                     (- p 1))))))
+                                                       (- q 1))))))
+                                                        (- m 1))))))
+                                                         (- n 1))))))
+           ;; (foo (- n 1)) 能正确计算 (n-1)!
+    ;; 上述代码有太多重复了 (lambda n)
+    ;;
+    ;; we always replacing a name with its value.
+    ;; here we extract a value and give it a names
+
+    ;; a generator
+    (lambda (factorial)
+      (lambda (n)
+        (cond
+          ((= n 0) 1)
+          (else
+            (* n (factorial (- n 1)))))))
+
+    ;; 传入eternity .生成了一个函数， == factorial_0
+    ((lambda (factorial)
+      (lambda (n)
+        (cond
+          ((= n 0) 1)
+          (else
+            ( * n (factorial (- n 1)))))))
+      eternity)
+
+    ;; 如果要写factorial_1 呢
+    ;; 艹 又看不懂了
+    ((lambda (factorial)
+      (lambda (n)
+        (cond
+          ((= n 0) 1)
+          (else
+            (* n (factorial (- n 1))))))) ;; 前一个lambda是什么 前一个lambda接受一个过程，返回一个过程，返回的过程有点类似于factorial
+      ((lambda (factorial)
+        (lambda (n)
+          (cond
+            ((= n 0) 1)
+            (else (* n (factorial (- n 1)))))))
+            eternity) ;; 后面一个lambda是什么 嗯，其实就是factorial_0
+            )
+
+    ;; ok 这个过程其实就是 factorial_1
+    ;; 好，接受一个factorial过程，返回一个过程
+    ;; 返回的过程比传入的过程能多求一阶
+
+    ;; 小练习 用这个方式生成 factorial_2
+
+    ;;继续观察 我们的代码里面还是有重复的东西，继续抽象
+    ;;怎么抽象呢 --- 我们注意到有一个过程它接受一个 factorial 作为参数 返回的东西也很像factorial
+
+    ;; 把这个接受 factorial 返回一个很像 factorial的过程 命一个名 就叫 mk-factorial
+    ;; 最终规约为这个形式
+
+    ;; 这是factorial_0
+    ((lambda (mk-factorial)
+        (mk-factorial eternity))
+      (lambda (factorial)
+        (lambda (n)
+          (cond
+            ((= n 0) 1)
+            (else (* n (factorial (- n 1))))))))
+
+    ;; 这是factorial_3
+    ((lambda (mk-factorial)
+        (mk-factorial
+          (mk-factorial
+            (mk-factorial
+              (mk-factorial eternity)))))
+      (lambda (factorial)
+        (lambda (n)
+          (cond
+            ((= n 0) 1)
+            (else (* n (factorial (- n 1))))))))
+    ;;
+
+    ;;
+    ((lambda (mk-factorial)
+        (mk-factorial mk-factorial))
+      (lambda (mk-factorial)
+        (lambda (n)
+          (cond
+            ((= n 0) 1)
+            (else (* n (mk-factorial (- n 1))))))))
+
+    ;; 再来一个我看不懂的变换
+    ((lambda (mk-factorial)
+        (mk-factorial mk-factorial))
+      (lambda (mk-factorial)
+        (lambda (n)
+          (cond
+            ((= n 0) 1)
+            (else (* n ((mk-factorial eternity) (- n 1))))))))
+
+    ;;再来一个我看不懂的变换
+    ((lambda (mk-factorial)
+        (mk-factorial mk-factorial))
+      (lambda (mk-factorial)
+        (lambda (n)
+          (cond
+            ((= n 0) 1)
+            (else (* n ((mk-factorial mk-factorial) (- n 1))))))))
+
+   ;; (mk-factorial mk-factorial) 转换成下面的东西
+   ;; (lambda (x)
+   ;;    ((mk-factorial mk-factorial) x))
+
+   ;; what is name what is value. what's the difference between name & value;
+   ((lambda (mk-factorial)
+       (mk-factorial mk-factorial))
+     (lambda (mk-factorial)
+       (lambda (n)
+         (cond
+           ((= n 0) 1)
+           (else (* n
+                   ((lambda (x)
+                        ((mk-factorial mk-factorial) x))
+                    (- n 1))))))))
+
+  ;;关键的来了，屏住呼吸
+  ;; 又一个我看不懂的变换
+
+  ;;终极变换
+  (lambda (fc)
+    ((lambda (mk-factorial)
+      (mk-factorial mk-factorial))
+    (lambda (mk-factorial)
+      (fc (lambda (n)
+            ((mk-factorial mk-factorial) n))))))
